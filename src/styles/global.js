@@ -11,7 +11,7 @@ const Global = createGlobalStyle`
 
 body {
   font: 400 16px Roboto, sans-serif;
-  background: #121212;
+  background: rgba(0,0,0,0.8);
   color: white;
   -webkit-font-smoothing: antialiased;
 }
@@ -19,6 +19,17 @@ body {
 .nav-link{
   text-decoration: none;
   color: white
+}
+
+.menu{
+  position: absolute;
+  cursor: pointer;
+  color: rgba(255,255,255,.5);
+  transition: all .15s ease-in-out;
+  margin: 1rem;
+  &:hover {
+    color: white
+  }
 }
 `
 export default Global

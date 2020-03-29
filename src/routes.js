@@ -28,12 +28,7 @@ export default function Routes() {
   return (
     <BrowserRouter>
       <>
-        <MdMenu
-          style={{ cursor: 'pointer' }}
-          color="white"
-          size={35}
-          onClick={toggleDrawer(true)}
-        />
+        <MdMenu className="menu" size={35} onClick={toggleDrawer(true)} />
         <Drawer anchor="left" open={state.left} onClose={toggleDrawer(false)}>
           <List style={{ padding: 0 }} onClick={toggleDrawer(false)}>
             {['Home', 'Funcionários'].map((text) => (
@@ -45,9 +40,9 @@ export default function Routes() {
                 <ListItem button>
                   <ListItemIcon>
                     {text === 'Home' ? (
-                      <MdHome size={20} />
+                      <MdHome size={30} />
                     ) : (
-                      <MdPeople size={20} />
+                      <MdPeople size={30} />
                     )}
                   </ListItemIcon>
                   <ListItemText primary={text} />
