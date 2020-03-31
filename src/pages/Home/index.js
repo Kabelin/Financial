@@ -3,10 +3,6 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { lighten, makeStyles } from '@material-ui/core/styles'
 import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers'
-import {
   Table,
   TableBody,
   TableCell,
@@ -21,11 +17,10 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
-  Grid,
 } from '@material-ui/core'
-import { MdPrint } from 'react-icons/md'
+import { MdPrint, MdToday } from 'react-icons/md'
 import moment from 'moment'
-import MomentUtils from '@date-io/moment'
+import DateDialog from '../../components/DateDialog'
 
 import 'moment/locale/pt-br'
 
@@ -253,13 +248,18 @@ const useToolbarStyles = makeStyles((theme) => ({
 }))
 
 const EnhancedTableToolbar = ({ numSelected, selected }) => {
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date('2014-03-18T21:11:54')
-  )
+  const [date, setDate] = React.useState(new Date('2014-03-18T21:11:54'))
+  const [open, setOpen] = React.useState(false)
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date)
+  const handleClickOpen = () => {
+    setOpen(true)
   }
+
+  const handleClose = (value) => {
+    setOpen(false)
+    setDate(value)
+  }
+
   const classes = useToolbarStyles()
 
   function handlePrint() {
@@ -290,37 +290,26 @@ const EnhancedTableToolbar = ({ numSelected, selected }) => {
           id="tableTitle"
           component="div"
         >
-          Balancete de {moment(selectedDate).format('MMMM')}
+          Balancete de {moment(date).format('MMMM')}
         </Typography>
       )}
 
       {numSelected > 0 ? (
-        <Tooltip title="Print">
+        <Tooltip placement="top" title="Print">
           <IconButton onClick={handlePrint} aria-label="print">
             <MdPrint />
           </IconButton>
         </Tooltip>
       ) : (
-        <Grid container justify="flex-end">
-          <MuiPickersUtilsProvider utils={MomentUtils}>
-            <KeyboardDatePicker
-              autoOk
-              disableToolbar
-              textFieldStyle={{ display: 'none' }}
-              format="MMMM"
-              variant="inline"
-              margin="normal"
-              views={['year', 'month']}
-              id="date-picker"
-              label="Selecione uma data"
-              value={selectedDate}
-              onChange={handleDateChange}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-          </MuiPickersUtilsProvider>
-        </Grid>
+        <>
+          <Tooltip placement="top" title="Date">
+            <IconButton onClick={handleClickOpen} aria-label="change date">
+              <MdToday />
+            </IconButton>
+          </Tooltip>
+
+          <DateDialog value={date} open={open} onClose={handleClose} />
+        </>
       )}
     </Toolbar>
   )
