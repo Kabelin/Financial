@@ -3,6 +3,10 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { lighten, makeStyles } from '@material-ui/core/styles'
 import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers'
+import {
   Table,
   TableBody,
   TableCell,
@@ -19,13 +23,10 @@ import {
   Tooltip,
   Grid,
 } from '@material-ui/core'
-import { MdPrint, MdFilterList } from 'react-icons/md'
+import { MdPrint } from 'react-icons/md'
 import moment from 'moment'
 import MomentUtils from '@date-io/moment'
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers'
+
 import 'moment/locale/pt-br'
 
 import { Container, Header } from './styles'
@@ -292,13 +293,21 @@ const EnhancedTableToolbar = ({ numSelected, selected }) => {
           Balancete de {moment(selectedDate).format('MMMM')}
         </Typography>
       )}
-      {numSelected === 0 && (
-        <Grid container>
+
+      {numSelected > 0 ? (
+        <Tooltip title="Print">
+          <IconButton onClick={handlePrint} aria-label="print">
+            <MdPrint />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Grid container justify="flex-end">
           <MuiPickersUtilsProvider utils={MomentUtils}>
             <KeyboardDatePicker
               autoOk
               disableToolbar
-              format="DD/MM/YYYY"
+              textFieldStyle={{ display: 'none' }}
+              format="MMMM"
               variant="inline"
               margin="normal"
               views={['year', 'month']}
@@ -312,20 +321,6 @@ const EnhancedTableToolbar = ({ numSelected, selected }) => {
             />
           </MuiPickersUtilsProvider>
         </Grid>
-      )}
-
-      {numSelected > 0 ? (
-        <Tooltip title="Print">
-          <IconButton onClick={handlePrint} aria-label="print">
-            <MdPrint />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <MdFilterList />
-          </IconButton>
-        </Tooltip>
       )}
     </Toolbar>
   )
