@@ -17,6 +17,7 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
+  TextField,
 } from '@material-ui/core'
 import { MdPrint, MdToday } from 'react-icons/md'
 import moment from 'moment'
@@ -34,88 +35,88 @@ function createData(name, calories, fat, carbs, date) {
 
 const rows = [
   createData(
-    'Cupcake',
+    'Cupcáke',
     305,
     3.7,
     67,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-06T21:11:54'))
   ),
   createData(
     'Donut',
     452,
     25.0,
     51,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-07T21:11:54'))
   ),
   createData(
     'Eclair',
     262,
     16.0,
     24,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2019-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2019-08-08T21:11:54'))
   ),
   createData(
     'Frozen yoghurt',
     159,
     6.0,
     24,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2012-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2012-08-09T21:11:54'))
   ),
   createData(
     'Gingerbread',
     356,
     16.0,
     49,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2017-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2017-08-10T21:11:54'))
   ),
   createData(
     'Honeycomb',
     408,
     3.2,
     87,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-11T21:11:54'))
   ),
   createData(
     'Ice cream sandwich',
     237,
     9.0,
     37,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2012-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2012-08-12T21:11:54'))
   ),
   createData(
     'Jelly Bean',
     375,
     0.0,
     94,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2011-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2011-08-13T21:11:54'))
   ),
   createData(
     'KitKat',
     518,
     26.0,
     65,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2016-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2016-08-14T21:11:54'))
   ),
   createData(
     'Lollipop',
     392,
     0.2,
     98,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2011-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2011-08-15T21:11:54'))
   ),
   createData(
     'Marshmallow',
     318,
     0,
     81,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2013-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2013-08-16T21:11:54'))
   ),
   createData(
     'Nougat',
     360,
     19.0,
     9,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-18T21:11:54'))
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-17T21:11:54'))
   ),
   createData(
     'Oreo',
@@ -247,7 +248,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
 }))
 
-const EnhancedTableToolbar = ({ numSelected, selected }) => {
+const EnhancedTableToolbar = ({
+  numSelected,
+  selected,
+  data,
+  setData,
+  setCount,
+}) => {
   const [date, setDate] = React.useState(new Date('2014-03-18T21:11:54'))
   const [open, setOpen] = React.useState(false)
 
@@ -258,6 +265,27 @@ const EnhancedTableToolbar = ({ numSelected, selected }) => {
   const handleClose = (value) => {
     setOpen(false)
     setDate(value)
+  }
+
+  const keys = ['name', 'calories', 'fat', 'carbs', 'date']
+
+  const fix = (value) => {
+    return value
+      .toString()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')
+      .trim()
+      .toLowerCase()
+  }
+
+  const handleSetData = (value) => {
+    const filteredData = data.filter((e) =>
+      keys.find((k) => fix(e[k]).includes(fix(value.target.value)))
+    )
+    setData(filteredData)
+    setCount(filteredData.length)
+    console.log(filteredData)
   }
 
   const classes = useToolbarStyles()
@@ -302,6 +330,13 @@ const EnhancedTableToolbar = ({ numSelected, selected }) => {
         </Tooltip>
       ) : (
         <>
+          <TextField
+            onChange={handleSetData}
+            id="standard-basic"
+            variant="outlined"
+            style={{ margin: 10 }}
+            label="Pesquisar"
+          />
           <Tooltip placement="top" title="Date">
             <IconButton onClick={handleClickOpen} aria-label="change date">
               <MdToday />
@@ -318,6 +353,9 @@ const EnhancedTableToolbar = ({ numSelected, selected }) => {
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   selected: PropTypes.array.isRequired,
+  data: PropTypes.array.isRequired,
+  setData: PropTypes.func.isRequired,
+  setCount: PropTypes.func.isRequired,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -358,6 +396,8 @@ export default function EnhancedTable() {
   const [selected, setSelected] = React.useState([])
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [data, setData] = React.useState(rows)
+  const [count, setCount] = React.useState(rows.length)
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -420,6 +460,9 @@ export default function EnhancedTable() {
         <EnhancedTableToolbar
           numSelected={selected.length}
           selected={selected}
+          data={rows}
+          setData={setData}
+          setCount={setCount}
         />
         <TableContainer>
           <Table
@@ -438,7 +481,7 @@ export default function EnhancedTable() {
               rowCount={rows.length}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
+              {stableSort(data, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row)
@@ -490,7 +533,7 @@ export default function EnhancedTable() {
         <TablePagination
           rowsPerPageOptions={rows.length >= 25 ? [5, 10, 25] : [5, 10]}
           component="div"
-          count={rows.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
