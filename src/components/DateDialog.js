@@ -1,14 +1,12 @@
 import React, { useState } from 'react'
 import { Dialog, Button, Grid } from '@material-ui/core'
 import PropTypes from 'prop-types'
-
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers'
 import moment from 'moment'
 import MomentUtils from '@date-io/moment'
-
 import 'moment/locale/pt-br'
 
 moment.locale('pt-br')
@@ -34,7 +32,8 @@ export default function DateDialog({ onClose, value, open }) {
         <KeyboardDatePicker
           format="MMMM"
           variant="static"
-          views={['year', 'month']}
+          views={['month', 'year']}
+          openTo="month"
           id="date-picker"
           label="Selecione uma data"
           value={date}
@@ -45,10 +44,14 @@ export default function DateDialog({ onClose, value, open }) {
         />
       </MuiPickersUtilsProvider>
       <Grid container justify="space-around">
-        <Button style={{ width: '50%' }} onClick={handleClose}>
+        <Button style={{ width: '50%' }} size="large" onClick={handleClose}>
           Cancel
         </Button>
-        <Button style={{ width: '50%' }} onClick={handleDateChange}>
+        <Button
+          style={{ width: '50%' }}
+          size="large"
+          onClick={handleDateChange}
+        >
           Ok
         </Button>
       </Grid>

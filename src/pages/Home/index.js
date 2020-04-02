@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import { lighten, makeStyles } from '@material-ui/core/styles'
 import {
@@ -7,27 +6,16 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
-  TablePagination,
   TableRow,
-  TableSortLabel,
-  Toolbar,
-  Typography,
-  Paper,
+  TablePagination,
   Checkbox,
-  IconButton,
-  Tooltip,
-  TextField,
+  Paper,
 } from '@material-ui/core'
-import { MdPrint, MdToday } from 'react-icons/md'
-import moment from 'moment'
-import DateDialog from '../../components/DateDialog'
-
-import 'moment/locale/pt-br'
-
 import { Container, Header } from './styles'
-
-moment.locale('pt-br')
+import EnhancedTableHead from '../../components/TableHead'
+import { EnhancedTableToolbar } from '../../components/TableToolBar'
+import getComparator from '../../utils/getComparator'
+import stableSort from '../../utils/stableSort'
 
 function createData(name, calories, fat, carbs, date) {
   return { name, calories, fat, carbs, date }
@@ -126,238 +114,6 @@ const rows = [
     new Intl.DateTimeFormat('pt-BR').format(new Date('2016-08-18T21:11:54'))
   ),
 ]
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1
-  }
-  return 0
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy)
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index])
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0])
-    if (order !== 0) return order
-    return a[1] - b[1]
-  })
-  return stabilizedThis.map((el) => el[0])
-}
-
-const headCells = [
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: true,
-    label: 'Dessert (100g serving)',
-  },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'date', numeric: true, disablePadding: false, label: 'Date' },
-]
-
-function EnhancedTableHead(props) {
-  const {
-    classes,
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property)
-  }
-
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            style={numSelected > 0 ? { color: 'white' } : {}}
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all desserts' }}
-          />
-        </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  )
-}
-
-EnhancedTableHead.propTypes = {
-  classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
-}
-
-const useToolbarStyles = makeStyles((theme) => ({
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-  },
-  highlight:
-    theme.palette.type === 'light'
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: `rgba(255,255,255,.1) !important`,
-        },
-  title: {
-    flex: '1 1 100%',
-  },
-}))
-
-const EnhancedTableToolbar = ({
-  numSelected,
-  selected,
-  data,
-  setData,
-  setCount,
-}) => {
-  const [date, setDate] = React.useState(new Date('2014-03-18T21:11:54'))
-  const [open, setOpen] = React.useState(false)
-
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
-
-  const handleClose = (value) => {
-    setOpen(false)
-    setDate(value)
-  }
-
-  const keys = ['name', 'calories', 'fat', 'carbs', 'date']
-
-  const fix = (value) => {
-    return value
-      .toString()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')
-      .trim()
-      .toLowerCase()
-  }
-
-  const handleSetData = (value) => {
-    const filteredData = data.filter((e) =>
-      keys.find((k) => fix(e[k]).includes(fix(value.target.value)))
-    )
-    setData(filteredData)
-    setCount(filteredData.length)
-    console.log(filteredData)
-  }
-
-  const classes = useToolbarStyles()
-
-  function handlePrint() {
-    console.log(selected)
-  }
-
-  return (
-    <Toolbar
-      className={clsx(classes.root, {
-        [classes.highlight]: numSelected > 0,
-      })}
-    >
-      {numSelected > 0 ? (
-        <Typography
-          className={classes.title}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected > 1
-            ? `${numSelected} selecionados`
-            : `${numSelected} selecionado`}
-        </Typography>
-      ) : (
-        <Typography
-          className={classes.title}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Balancete de {moment(date).format('MMMM')}
-        </Typography>
-      )}
-
-      {numSelected > 0 ? (
-        <Tooltip placement="top" title="Print">
-          <IconButton onClick={handlePrint} aria-label="print">
-            <MdPrint />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <>
-          <TextField
-            onChange={handleSetData}
-            id="standard-basic"
-            variant="outlined"
-            style={{ margin: 10 }}
-            label="Pesquisar"
-          />
-          <Tooltip placement="top" title="Date">
-            <IconButton onClick={handleClickOpen} aria-label="change date">
-              <MdToday />
-            </IconButton>
-          </Tooltip>
-
-          <DateDialog value={date} open={open} onClose={handleClose} />
-        </>
-      )}
-    </Toolbar>
-  )
-}
-
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-  selected: PropTypes.array.isRequired,
-  data: PropTypes.array.isRequired,
-  setData: PropTypes.func.isRequired,
-  setCount: PropTypes.func.isRequired,
-}
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     width: '100%',
@@ -513,12 +269,12 @@ export default function EnhancedTable() {
                         scope="row"
                         padding="none"
                       >
-                        {row.name}
+                        {row?.name}
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.date}</TableCell>
+                      <TableCell align="right">{row?.calories}</TableCell>
+                      <TableCell align="right">{row?.fat}</TableCell>
+                      <TableCell align="right">{row?.carbs}</TableCell>
+                      <TableCell align="right">{row?.date}</TableCell>
                     </TableRow>
                   )
                 })}
