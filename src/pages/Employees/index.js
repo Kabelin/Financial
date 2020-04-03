@@ -1,11 +1,12 @@
 import React from 'react'
-
-import { Container } from './styles'
+import EnhancedTable from '../../components/Table'
+import { Container, Header } from './styles'
 
 export default function Employees() {
   return (
     <Container>
-      <h1>Employees</h1>
+      <Header>Funcionários</Header>
+      <EnhancedTable component="Employees" />
     </Container>
   )
 }
