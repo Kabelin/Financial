@@ -22,97 +22,25 @@ function createData(name, calories, fat, carbs, date) {
 }
 
 const rows = [
-  createData(
-    'Donut',
-    452,
-    25.0,
-    51,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-07T21:11:54'))
-  ),
-  createData(
-    'Cupcáke',
-    305,
-    3.7,
-    67,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-06T21:11:54'))
-  ),
-  createData(
-    'Eclair',
-    262,
-    16.0,
-    24,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2019-08-08T21:11:54'))
-  ),
-  createData(
-    'Frozen yoghurt',
-    159,
-    6.0,
-    24,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2012-08-09T21:11:54'))
-  ),
-  createData(
-    'Gingerbread',
-    356,
-    16.0,
-    49,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2017-08-10T21:11:54'))
-  ),
-  createData(
-    'Honeycomb',
-    408,
-    3.2,
-    87,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-11T21:11:54'))
-  ),
+  createData('Donut', 452, 25.0, 51, new Date('2014-08-07T21:11:54')),
+  createData('Cupcáke', 305, 3.7, 67, new Date('2014-08-06T21:11:54')),
+  createData('Eclair', 262, 16.0, 24, new Date('2019-08-08T21:11:54')),
+  createData('Frozen yoghurt', 159, 6.0, 24, new Date('2012-08-09T21:11:54')),
+  createData('Gingerbread', 356, 16.0, 49, new Date('2017-08-10T21:11:54')),
+  createData('Honeycomb', 408, 3.2, 87, new Date('2014-08-11T21:11:54')),
   createData(
     'Ice cream sandwich',
     237,
     9.0,
     37,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2012-08-12T21:11:54'))
+    new Date('2012-08-12T21:11:54')
   ),
-  createData(
-    'Jelly Bean',
-    375,
-    0.0,
-    94,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2011-08-13T21:11:54'))
-  ),
-  createData(
-    'KitKat',
-    518,
-    26.0,
-    65,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2016-08-14T21:11:54'))
-  ),
-  createData(
-    'Lollipop',
-    392,
-    0.2,
-    98,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2011-08-15T21:11:54'))
-  ),
-  createData(
-    'Marshmallow',
-    318,
-    0,
-    81,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2013-08-16T21:11:54'))
-  ),
-  createData(
-    'Nougat',
-    360,
-    19.0,
-    9,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-17T21:11:54'))
-  ),
-  createData(
-    'Oreo',
-    437,
-    18.0,
-    63,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2016-08-18T21:11:54'))
-  ),
+  createData('Jelly Bean', 375, 0.0, 94, new Date('2011-08-13T21:11:54')),
+  createData('KitKat', 518, 26.0, 65, new Date('2016-08-14T21:11:54')),
+  createData('Lollipop', 392, 0.2, 98, new Date('2011-08-15T21:11:54')),
+  createData('Marshmallow', 318, 0, 81, new Date('2013-08-16T21:11:54')),
+  createData('Nougat', 360, 19.0, 9, new Date('2014-08-17T21:11:54')),
+  createData('Oreo', 437, 18.0, 63, new Date('2016-08-18T21:11:54')),
 ]
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -272,7 +200,9 @@ export default function EnhancedTable({ component }) {
                     <TableCell align="right">{row?.calories}</TableCell>
                     <TableCell align="right">{row?.fat}</TableCell>
                     <TableCell align="right">{row?.carbs}</TableCell>
-                    <TableCell align="right">{row?.date}</TableCell>
+                    <TableCell align="right">
+                      {new Intl.DateTimeFormat('pt-BR').format(row?.date)}
+                    </TableCell>
                   </TableRow>
                 )
               })}
