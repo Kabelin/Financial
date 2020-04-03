@@ -23,18 +23,18 @@ function createData(name, calories, fat, carbs, date) {
 
 const rows = [
   createData(
-    'Cupcáke',
-    305,
-    3.7,
-    67,
-    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-06T21:11:54'))
-  ),
-  createData(
     'Donut',
     452,
     25.0,
     51,
     new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-07T21:11:54'))
+  ),
+  createData(
+    'Cupcáke',
+    305,
+    3.7,
+    67,
+    new Intl.DateTimeFormat('pt-BR').format(new Date('2014-08-06T21:11:54'))
   ),
   createData(
     'Eclair',
