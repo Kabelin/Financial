@@ -1,8 +1,9 @@
 exports.up = (knex) =>
   knex.schema.createTable('employees', (table) => {
-    table.string('id').primary()
+    table.increments('id').primary()
     table.string('name').notNullable()
-    table.string('balance')
+    table.decimal('balance').defaultTo(0.0)
+    table.timestamps(true, true)
   })
 
 exports.down = (knex) => knex.schema.dropTable('employees')
