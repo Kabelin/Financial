@@ -9,9 +9,10 @@ import {
   Tooltip,
   TextField,
 } from '@material-ui/core'
-import { MdPrint, MdToday } from 'react-icons/md'
+import { MdPrint, MdToday, MdAddCircle, MdEdit } from 'react-icons/md'
 import moment from 'moment'
 import DateDialog from './DateDialog'
+import AddDialog from './AddDialog'
 import 'moment/locale/pt-br'
 
 moment.locale('pt-br')
@@ -42,17 +43,28 @@ export const EnhancedTableToolbar = ({
   data,
   setData,
   setCount,
+  component,
 }) => {
-  const [date, setDate] = React.useState(new Date('2014-03-18T21:11:54'))
-  const [open, setOpen] = React.useState(false)
+  const [date, setDate] = React.useState(new Date())
+  const [openDate, setOpenDate] = React.useState(false)
+  const [openAdd, setOpenAdd] = React.useState(false)
 
-  const handleClickOpen = () => {
-    setOpen(true)
+  const handleOpenDate = () => {
+    setOpenDate(true)
   }
 
-  const handleClose = (value) => {
-    setOpen(false)
+  const handleCloseDate = (value) => {
+    setOpenDate(false)
     setDate(value)
+  }
+
+  const handleOpenAdd = () => {
+    setOpenAdd(true)
+  }
+
+  const handleCloseAdd = (value) => {
+    setOpenAdd(false)
+    console.log(value)
   }
 
   const keys = ['name', 'calories', 'fat', 'carbs', 'date']
@@ -106,20 +118,35 @@ export const EnhancedTableToolbar = ({
           id="tableTitle"
           component="div"
         >
-          Balancete de {moment(date).format('MMMM')}
+          {component === 'Home' &&
+            `Balancete de ${moment(date).format('MMMM')}`}
+          {component === 'Employees' && `Lista de funcionários`}
         </Typography>
       )}
 
       {numSelected > 0 ? (
-        <Tooltip placement="top" title="Print">
-          <IconButton
-            style={{ margin: '14px 0' }}
-            onClick={handlePrint}
-            aria-label="print"
-          >
-            <MdPrint />
-          </IconButton>
-        </Tooltip>
+        <>
+          {numSelected === 1 && component === 'Employees' && (
+            <Tooltip placement="top" title="Edit">
+              <IconButton
+                style={{ margin: '14px 10px 14px' }}
+                onClick={() => {}}
+                aria-label="edit"
+              >
+                <MdEdit />
+              </IconButton>
+            </Tooltip>
+          )}
+          <Tooltip placement="top" title="Print">
+            <IconButton
+              style={{ margin: '14px 0' }}
+              onClick={handlePrint}
+              aria-label="print"
+            >
+              <MdPrint />
+            </IconButton>
+          </Tooltip>
+        </>
       ) : (
         <>
           <TextField
@@ -129,13 +156,23 @@ export const EnhancedTableToolbar = ({
             style={{ margin: '10px 10px 10px 0' }}
             label="Pesquisar"
           />
-          <Tooltip placement="top" title="Date">
-            <IconButton onClick={handleClickOpen} aria-label="change date">
-              <MdToday />
-            </IconButton>
-          </Tooltip>
+          {component === 'Home' && (
+            <Tooltip placement="top" title="Date">
+              <IconButton onClick={handleOpenDate} aria-label="change date">
+                <MdToday />
+              </IconButton>
+            </Tooltip>
+          )}
+          {component === 'Employees' && (
+            <Tooltip placement="top" title="Add">
+              <IconButton onClick={handleOpenAdd} aria-label="change date">
+                <MdAddCircle />
+              </IconButton>
+            </Tooltip>
+          )}
 
-          <DateDialog value={date} open={open} onClose={handleClose} />
+          <AddDialog value={date} open={openAdd} onClose={handleCloseAdd} />
+          <DateDialog value={date} open={openDate} onClose={handleCloseDate} />
         </>
       )}
     </Toolbar>
@@ -144,6 +181,7 @@ export const EnhancedTableToolbar = ({
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
+  component: PropTypes.string.isRequired,
   selected: PropTypes.array.isRequired,
   data: PropTypes.array.isRequired,
   setData: PropTypes.func.isRequired,

@@ -30,6 +30,9 @@ body {
   &:hover {
     color: white
   }
+  .active .listItem {
+    opacity: .5
+  }
 }
 `
 export default Global

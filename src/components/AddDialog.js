@@ -9,26 +9,17 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
 export default function AddDialog({ open, onClose }) {
-  const [email, setEmail] = useState(undefined)
+  const [name, setName] = useState(undefined)
+  const buttonRef = React.createRef()
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setEmail(undefined)
-    onClose({
-      email,
-    })
+    setName(undefined)
+    onClose(name)
   }
 
   // Validators
-  const validateEmail = () =>
-    email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)
-      ? 'E-mail inválido!'
-      : undefined
-
-  const validateValue = (value, name) =>
-    !value ? `${name} é obrigatório!` : undefined
-
-  const validateForm = () => validateEmail() !== undefined || !email
+  const validateValue = () => (!name ? `Nome é obrigatório!` : undefined)
 
   return (
     <Dialog
@@ -43,27 +34,31 @@ export default function AddDialog({ open, onClose }) {
           corretas!
         </DialogContentText>
         <TextField
-          error={validateEmail() !== undefined}
-          helperText={validateEmail() || validateValue(email, 'E-mail')}
+          error={name === ''}
+          helperText={validateValue()}
           autoFocus
           margin="dense"
           id="name"
-          onChange={(e) => setEmail(e.target.value)}
-          label="Email Address"
-          type="email"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') buttonRef.current.click()
+          }}
+          onChange={(e) => setName(e.target.value)}
+          label="Nome"
+          type="text"
           fullWidth
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={() => onClose()} color="primary">
-          Cancel
+          Cancelar
         </Button>
         <Button
-          disabled={validateForm()}
+          ref={buttonRef}
+          disabled={name === '' || name === undefined}
           onClick={handleSubmit}
           color="primary"
         >
-          Subscribe
+          Cadastrar
         </Button>
       </DialogActions>
     </Dialog>

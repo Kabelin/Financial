@@ -145,6 +145,7 @@ export default function EnhancedTable({ component }) {
         data={rows}
         setData={setData}
         setCount={setCount}
+        component={component}
       />
       <TableContainer>
         <Table
