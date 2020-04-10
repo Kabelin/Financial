@@ -12,36 +12,15 @@ import {
   Checkbox,
   Paper,
 } from '@material-ui/core'
+import moment from 'moment'
 import EnhancedTableHead from './TableHead'
 import { EnhancedTableToolbar } from './TableToolBar'
 import getComparator from '../utils/getComparator'
 import stableSort from '../utils/stableSort'
+import 'moment/locale/pt-br'
 
-function createData(name, calories, fat, carbs, date) {
-  return { name, calories, fat, carbs, date }
-}
+moment.locale('pt-br')
 
-const rows = [
-  createData('Donut', 452, 25.0, 51, new Date('2014-08-07T21:11:54')),
-  createData('Cupcáke', 305, 3.7, 67, new Date('2014-08-06T21:11:54')),
-  createData('Eclair', 262, 16.0, 24, new Date('2019-08-08T21:11:54')),
-  createData('Frozen yoghurt', 159, 6.0, 24, new Date('2012-08-09T21:11:54')),
-  createData('Gingerbread', 356, 16.0, 49, new Date('2017-08-10T21:11:54')),
-  createData('Honeycomb', 408, 3.2, 87, new Date('2014-08-11T21:11:54')),
-  createData(
-    'Ice cream sandwich',
-    237,
-    9.0,
-    37,
-    new Date('2012-08-12T21:11:54')
-  ),
-  createData('Jelly Bean', 375, 0.0, 94, new Date('2011-08-13T21:11:54')),
-  createData('KitKat', 518, 26.0, 65, new Date('2016-08-14T21:11:54')),
-  createData('Lollipop', 392, 0.2, 98, new Date('2011-08-15T21:11:54')),
-  createData('Marshmallow', 318, 0, 81, new Date('2013-08-16T21:11:54')),
-  createData('Nougat', 360, 19.0, 9, new Date('2014-08-17T21:11:54')),
-  createData('Oreo', 437, 18.0, 63, new Date('2016-08-18T21:11:54')),
-]
 const useStyles = makeStyles((theme) => ({
   paper: {
     width: '100%',
@@ -73,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
         },
 }))
 
-export default function EnhancedTable({ component }) {
+export default function EnhancedTable({ component, rows }) {
   const classes = useStyles()
   const [order, setOrder] = React.useState('asc')
   const [orderBy, setOrderBy] = React.useState('')
@@ -91,7 +70,7 @@ export default function EnhancedTable({ component }) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n)
+      const newSelecteds = data.map((n) => n)
       setSelected(newSelecteds)
       return
     }
@@ -100,13 +79,13 @@ export default function EnhancedTable({ component }) {
 
   const handleClick = (event, row) => {
     const selectedIndex = selected.indexOf(row)
-    console.log(selectedIndex)
+    console.log(selected, selected.indexOf(row), row)
     let newSelected = []
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(
         selected,
-        rows.find((f) => f === row)
+        data.find((f) => f === row)
       )
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1))
@@ -134,15 +113,15 @@ export default function EnhancedTable({ component }) {
 
   const isSelected = (row) => selected.indexOf(row) !== -1
 
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage)
+  // const emptyRows =
+  //   rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage)
 
   return (
     <Paper className={classes.paper}>
       <EnhancedTableToolbar
         numSelected={selected.length}
         selected={selected}
-        data={rows}
+        data={data}
         setData={setData}
         setCount={setCount}
         component={component}
@@ -158,65 +137,125 @@ export default function EnhancedTable({ component }) {
             classes={classes}
             numSelected={selected.length}
             order={order}
+            component={component}
             orderBy={orderBy}
             onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
-            rowCount={rows.length}
+            rowCount={data.length}
           />
           <TableBody>
-            {stableSort(data, getComparator(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => {
-                const isItemSelected = isSelected(row)
-                const labelId = `enhanced-table-checkbox-${index}`
+            {component === 'Employees' &&
+              stableSort(data, getComparator(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  const isItemSelected = isSelected(row)
+                  const labelId = `enhanced-table-checkbox-${index}`
 
-                return (
-                  <TableRow
-                    hover
-                    className={clsx({
-                      [classes.highlight]: isItemSelected,
-                    })}
-                    onClick={(event) => handleClick(event, row)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.name}
-                    selected={isItemSelected}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        style={isItemSelected ? { color: 'white' } : {}}
-                        checked={isItemSelected}
-                        inputProps={{ 'aria-labelledby': labelId }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
+                  return (
+                    <TableRow
+                      hover
+                      className={clsx({
+                        [classes.highlight]: isItemSelected,
+                      })}
+                      onClick={(event) => handleClick(event, row)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
                     >
-                      {row?.name}
-                    </TableCell>
-                    <TableCell align="right">{row?.calories}</TableCell>
-                    <TableCell align="right">{row?.fat}</TableCell>
-                    <TableCell align="right">{row?.carbs}</TableCell>
-                    <TableCell align="right">
-                      {new Intl.DateTimeFormat('pt-BR').format(row?.date)}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            {emptyRows > 0 && (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          style={isItemSelected ? { color: 'white' } : {}}
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="none"
+                      >
+                        {row.name}
+                      </TableCell>
+                      <TableCell align="right">
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(row.balance)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {moment(row.createdAt).format('DD/MM/YYYY')}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+            {component === 'Home' &&
+              stableSort(data, getComparator(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  const isItemSelected = isSelected(row)
+                  const labelId = `enhanced-table-checkbox-${index}`
+
+                  return (
+                    <TableRow
+                      hover
+                      className={clsx({
+                        [classes.highlight]: isItemSelected,
+                      })}
+                      onClick={(event) => handleClick(event, row)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          style={isItemSelected ? { color: 'white' } : {}}
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="none"
+                      >
+                        {row.description}
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                      >
+                        {row.type === 'credit' ? 'Crédito' : 'Débito'}
+                      </TableCell>
+                      <TableCell align="right">
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(row.value)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {moment(row.createdAt).format('DD/MM/YYYY')}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+            {/* {emptyRows > 0 && (
               <TableRow style={{ height: 53 * emptyRows }}>
                 <TableCell colSpan={6} />
               </TableRow>
-            )}
+            )} */}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={rows.length >= 25 ? [5, 10, 25] : [5, 10]}
+        rowsPerPageOptions={data.length >= 25 ? [5, 10, 25] : [5, 10]}
         component="div"
         count={count}
         rowsPerPage={rowsPerPage}
@@ -230,4 +269,5 @@ export default function EnhancedTable({ component }) {
 
 EnhancedTable.propTypes = {
   component: PropTypes.string.isRequired,
+  rows: PropTypes.array.isRequired,
 }

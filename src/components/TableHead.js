@@ -8,23 +8,44 @@ import {
   Checkbox,
 } from '@material-ui/core'
 
-const headCells = [
+const headCellsEmployees = [
   {
     id: 'name',
     numeric: false,
     disablePadding: true,
-    label: 'Dessert (100g serving)',
+    label: 'Nome',
   },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'date', numeric: true, disablePadding: false, label: 'Date' },
+  { id: 'balance', numeric: true, disablePadding: false, label: 'Saldo' },
+  {
+    id: 'createdAt',
+    numeric: true,
+    disablePadding: false,
+    label: 'Data de criação',
+  },
+]
+
+const headCellsHome = [
+  {
+    id: 'description',
+    numeric: false,
+    disablePadding: true,
+    label: 'Descrição',
+  },
+  { id: 'type', numeric: true, disablePadding: false, label: 'Tipo' },
+  { id: 'value', numeric: true, disablePadding: false, label: 'Valor' },
+  {
+    id: 'createdAt',
+    numeric: true,
+    disablePadding: false,
+    label: 'Data de criação',
+  },
 ]
 
 export default function EnhancedTableHead({
   classes,
   onSelectAllClick,
   order,
+  component,
   orderBy,
   numSelected,
   rowCount,
@@ -33,12 +54,14 @@ export default function EnhancedTableHead({
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property)
   }
+  const disabled = !(rowCount > 0)
 
   return (
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
+            disabled={disabled}
             style={numSelected > 0 ? { color: 'white' } : {}}
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
@@ -46,27 +69,58 @@ export default function EnhancedTableHead({
             inputProps={{ 'aria-label': 'select all desserts' }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
+        {component === 'Employees' &&
+          headCellsEmployees.map((headCell) => (
+            <TableCell
+              disabled={disabled}
+              key={headCell.id}
+              align={headCell.numeric ? 'right' : 'left'}
+              padding={headCell.disablePadding ? 'none' : 'default'}
+              sortDirection={orderBy === headCell.id ? order : false}
             >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
+              <TableSortLabel
+                disabled={disabled}
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : 'asc'}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <span className={classes.visuallyHidden}>
+                    {order === 'desc'
+                      ? 'sorted descending'
+                      : 'sorted ascending'}
+                  </span>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ))}
+        {component === 'Home' &&
+          headCellsHome.map((headCell) => (
+            <TableCell
+              disabled={disabled}
+              key={headCell.id}
+              align={headCell.numeric ? 'right' : 'left'}
+              padding={headCell.disablePadding ? 'none' : 'default'}
+              sortDirection={orderBy === headCell.id ? order : false}
+            >
+              <TableSortLabel
+                disabled={disabled}
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : 'asc'}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <span className={classes.visuallyHidden}>
+                    {order === 'desc'
+                      ? 'sorted descending'
+                      : 'sorted ascending'}
+                  </span>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ))}
       </TableRow>
     </TableHead>
   )
@@ -80,4 +134,5 @@ EnhancedTableHead.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
+  component: PropTypes.string.isRequired,
 }

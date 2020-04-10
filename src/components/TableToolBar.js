@@ -67,6 +67,8 @@ export const EnhancedTableToolbar = ({
     console.log(value)
   }
 
+  const disabled = !(data.length > 0)
+
   const keys = ['name', 'calories', 'fat', 'carbs', 'date']
 
   const fix = (value) => {
@@ -150,6 +152,7 @@ export const EnhancedTableToolbar = ({
       ) : (
         <>
           <TextField
+            disabled={disabled}
             onChange={handleSetData}
             id="standard-basic"
             variant="outlined"

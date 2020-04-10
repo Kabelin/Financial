@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Switch, Route, NavLink } from 'react-router-dom'
 import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -13,6 +13,7 @@ export default function Routes() {
   const [state, setState] = React.useState({
     left: false,
   })
+  const [active, setActive] = React.useState('Home')
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -32,12 +33,14 @@ export default function Routes() {
         <Drawer anchor="left" open={state.left} onClose={toggleDrawer(false)}>
           <List style={{ padding: 0 }} onClick={toggleDrawer(false)}>
             {['Home', 'Funcionários'].map((text) => (
-              <Link
+              <NavLink
                 className="nav-link"
                 key={text}
+                exact
+                onClick={() => setActive(text)}
                 to={text === 'Home' ? '/' : '/employees'}
               >
-                <ListItem button>
+                <ListItem selected={active === text} button>
                   <ListItemIcon>
                     {text === 'Home' ? (
                       <MdHome size={30} />
@@ -47,7 +50,7 @@ export default function Routes() {
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItem>
-              </Link>
+              </NavLink>
             ))}
           </List>
         </Drawer>
