@@ -6,8 +6,7 @@ CREATE TRIGGER update_employees
       UPDATE employees
       SET balance=
         (
-          (SELECT COALESCE(SUM(value),0) FROM postings WHERE employee_id=NEW.employee_id AND type='debit')
-          - (SELECT COALESCE(SUM(value),0) FROM postings WHERE employee_id=NEW.employee_id AND type='credit')
+          SELECT SUM(CASE WHEN type='debit' THEN value ELSE -value END) FROM postings WHERE employee_id=NEW.employee_id;
         )
       WHERE id=NEW.employee_id;
     END

@@ -14,17 +14,9 @@ moment.locale('pt-br')
 export default function DateDialog({ onClose, value, open }) {
   const [date, setDate] = useState(value)
 
-  const handleClose = () => {
-    onClose(value)
-  }
-
-  const handleDateChange = () => {
-    onClose(date)
-  }
-
   return (
     <Dialog
-      onClose={handleClose}
+      onClose={() => onClose(value)}
       aria-labelledby="simple-dialog-title"
       open={open}
     >
@@ -44,13 +36,17 @@ export default function DateDialog({ onClose, value, open }) {
         />
       </MuiPickersUtilsProvider>
       <Grid container justify="space-around">
-        <Button style={{ width: '50%' }} size="large" onClick={handleClose}>
+        <Button
+          style={{ width: '50%' }}
+          size="large"
+          onClick={() => onClose(value)}
+        >
           Cancel
         </Button>
         <Button
           style={{ width: '50%' }}
           size="large"
-          onClick={handleDateChange}
+          onClick={() => onClose(date)}
         >
           Ok
         </Button>
@@ -62,5 +58,5 @@ export default function DateDialog({ onClose, value, open }) {
 DateDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  value: PropTypes.object.isRequired,
+  value: PropTypes.string.isRequired,
 }

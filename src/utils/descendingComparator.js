@@ -1,5 +1,4 @@
 export default function descendingComparator(a, b, orderBy) {
-  console.log(orderBy)
   if (orderBy === 'date') {
     if (new Date(b[orderBy]) < new Date(a[orderBy])) {
       return -1

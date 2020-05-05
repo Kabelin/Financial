@@ -7,4 +7,6 @@ const routes = express.Router()
 routes.get('/employees', EmployeesController.index)
 routes.get('/postings', PostingsController.index)
 
+routes.post('/employees', EmployeesController.create)
+
 module.exports = routes

@@ -12,7 +12,8 @@ import {
 import { MdPrint, MdToday, MdAddCircle, MdEdit } from 'react-icons/md'
 import moment from 'moment'
 import DateDialog from './DateDialog'
-import AddDialog from './AddDialog'
+import AddEmployeeDialog from './AddEmployeeDialog'
+import AddPostingDialog from './AddPostingDialog'
 import 'moment/locale/pt-br'
 
 moment.locale('pt-br')
@@ -40,14 +41,20 @@ const useToolbarStyles = makeStyles((theme) => ({
 export const EnhancedTableToolbar = ({
   numSelected,
   selected,
-  data,
+  rows,
+  auxDate,
   setData,
   setCount,
+  setLoading,
+  getData,
+  handleNewEmployee,
+  handleNewPosting,
   component,
 }) => {
-  const [date, setDate] = React.useState(new Date())
+  const [date, setDate] = React.useState(auxDate)
   const [openDate, setOpenDate] = React.useState(false)
-  const [openAdd, setOpenAdd] = React.useState(false)
+  const [openAddEmployee, setOpenAddEmployee] = React.useState(false)
+  const [openAddPosting, setOpenAddPosting] = React.useState(false)
 
   const handleOpenDate = () => {
     setOpenDate(true)
@@ -55,23 +62,38 @@ export const EnhancedTableToolbar = ({
 
   const handleCloseDate = (value) => {
     setOpenDate(false)
-    setDate(value)
+    if (moment(value).format() !== date) {
+      setLoading(true)
+      setDate(value)
+      getData(value)
+    }
   }
 
-  const handleOpenAdd = () => {
-    setOpenAdd(true)
+  const handleOpenAddEmployee = () => {
+    setOpenAddEmployee(true)
   }
 
-  const handleCloseAdd = (value) => {
-    setOpenAdd(false)
-    console.log(value)
+  const handleCloseAddEmployee = (value) => {
+    setOpenAddEmployee(false)
+    return value ? handleNewEmployee(value) : console.log(value)
   }
 
-  const disabled = !(data.length > 0)
+  const handleOpenAddPosting = () => {
+    setOpenAddPosting(true)
+  }
 
-  const keys = ['name', 'calories', 'fat', 'carbs', 'date']
+  const handleCloseAddPosting = (value) => {
+    setOpenAddPosting(false)
+    return value ? handleNewPosting(value) : console.log(value)
+  }
+
+  const keys =
+    component === 'Home'
+      ? ['description', 'type', 'value', 'createdAt']
+      : ['name', 'balance', 'createdAt']
 
   const fix = (value) => {
+    console.log('Valor:', value)
     return value
       .toString()
       .normalize('NFD')
@@ -82,11 +104,19 @@ export const EnhancedTableToolbar = ({
   }
 
   const handleSetData = (value) => {
-    const filteredData = data.filter((e) =>
-      keys.find((k) => fix(e[k]).includes(fix(value.target.value)))
+    setLoading(true)
+    const filteredData = rows.filter((e) =>
+      keys.find((k) =>
+        k === 'createdAt'
+          ? fix(moment(e[k]).format('DD/MM/YYYY')).includes(
+              fix(value.target.value)
+            )
+          : fix(e[k]).includes(fix(value.target.value))
+      )
     )
     setData(filteredData)
     setCount(filteredData.length)
+    setLoading(false)
     console.log(filteredData)
   }
 
@@ -152,7 +182,6 @@ export const EnhancedTableToolbar = ({
       ) : (
         <>
           <TextField
-            disabled={disabled}
             onChange={handleSetData}
             id="standard-basic"
             variant="outlined"
@@ -160,21 +189,43 @@ export const EnhancedTableToolbar = ({
             label="Pesquisar"
           />
           {component === 'Home' && (
-            <Tooltip placement="top" title="Date">
-              <IconButton onClick={handleOpenDate} aria-label="change date">
-                <MdToday />
-              </IconButton>
-            </Tooltip>
+            <>
+              <Tooltip placement="top" title="Date">
+                <IconButton onClick={handleOpenDate} aria-label="change date">
+                  <MdToday />
+                </IconButton>
+              </Tooltip>
+              <Tooltip placement="top" title="Add">
+                <IconButton
+                  onClick={handleOpenAddPosting}
+                  aria-label="change date"
+                >
+                  <MdAddCircle />
+                </IconButton>
+              </Tooltip>
+            </>
           )}
           {component === 'Employees' && (
             <Tooltip placement="top" title="Add">
-              <IconButton onClick={handleOpenAdd} aria-label="change date">
+              <IconButton
+                onClick={handleOpenAddEmployee}
+                aria-label="change date"
+              >
                 <MdAddCircle />
               </IconButton>
             </Tooltip>
           )}
 
-          <AddDialog value={date} open={openAdd} onClose={handleCloseAdd} />
+          <AddEmployeeDialog
+            value={date}
+            open={openAddEmployee}
+            onClose={handleCloseAddEmployee}
+          />
+          <AddPostingDialog
+            value={date}
+            open={openAddPosting}
+            onClose={handleCloseAddPosting}
+          />
           <DateDialog value={date} open={openDate} onClose={handleCloseDate} />
         </>
       )}
@@ -185,8 +236,18 @@ export const EnhancedTableToolbar = ({
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   component: PropTypes.string.isRequired,
+  auxDate: PropTypes.string.isRequired,
   selected: PropTypes.array.isRequired,
-  data: PropTypes.array.isRequired,
+  rows: PropTypes.array.isRequired,
   setData: PropTypes.func.isRequired,
   setCount: PropTypes.func.isRequired,
+  setLoading: PropTypes.func.isRequired,
+  getData: PropTypes.func.isRequired,
+  handleNewEmployee: PropTypes.func,
+  handleNewPosting: PropTypes.func,
+}
+
+EnhancedTableToolbar.defaultProps = {
+  handleNewEmployee: () => {},
+  handleNewPosting: () => {},
 }
