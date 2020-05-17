@@ -74,8 +74,9 @@ export const EnhancedTableToolbar = ({
   }
 
   const handleCloseAddEmployee = (value) => {
+    if (value) setLoading(true)
     setOpenAddEmployee(false)
-    return value ? handleNewEmployee(value) : console.log(value)
+    return value ? handleNewEmployee(value) : ''
   }
 
   const handleOpenAddPosting = () => {
@@ -83,8 +84,9 @@ export const EnhancedTableToolbar = ({
   }
 
   const handleCloseAddPosting = (value) => {
+    if (value) setLoading(true)
     setOpenAddPosting(false)
-    return value ? handleNewPosting(value) : console.log(value)
+    return value ? handleNewPosting(value) : ''
   }
 
   const keys =
@@ -93,7 +95,6 @@ export const EnhancedTableToolbar = ({
       : ['name', 'balance', 'createdAt']
 
   const fix = (value) => {
-    console.log('Valor:', value)
     return value
       .toString()
       .normalize('NFD')
@@ -117,7 +118,6 @@ export const EnhancedTableToolbar = ({
     setData(filteredData)
     setCount(filteredData.length)
     setLoading(false)
-    console.log(filteredData)
   }
 
   const classes = useToolbarStyles()
@@ -217,16 +217,18 @@ export const EnhancedTableToolbar = ({
           )}
 
           <AddEmployeeDialog
-            value={date}
             open={openAddEmployee}
             onClose={handleCloseAddEmployee}
           />
           <AddPostingDialog
-            value={date}
             open={openAddPosting}
             onClose={handleCloseAddPosting}
           />
-          <DateDialog value={date} open={openDate} onClose={handleCloseDate} />
+          <DateDialog
+            value={moment(date).format()}
+            open={openDate}
+            onClose={handleCloseDate}
+          />
         </>
       )}
     </Toolbar>
@@ -243,11 +245,6 @@ EnhancedTableToolbar.propTypes = {
   setCount: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   getData: PropTypes.func.isRequired,
-  handleNewEmployee: PropTypes.func,
-  handleNewPosting: PropTypes.func,
-}
-
-EnhancedTableToolbar.defaultProps = {
-  handleNewEmployee: () => {},
-  handleNewPosting: () => {},
+  handleNewEmployee: PropTypes.func.isRequired,
+  handleNewPosting: PropTypes.func.isRequired,
 }

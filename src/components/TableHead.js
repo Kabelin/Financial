@@ -31,6 +31,12 @@ const headCellsHome = [
     disablePadding: true,
     label: 'Descrição',
   },
+  {
+    id: 'employee',
+    numeric: true,
+    disablePadding: false,
+    label: 'Funcionário',
+  },
   { id: 'type', numeric: true, disablePadding: false, label: 'Tipo' },
   { id: 'value', numeric: true, disablePadding: false, label: 'Valor' },
   {

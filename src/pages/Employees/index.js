@@ -19,7 +19,7 @@ export default function Employees() {
       await api.post('employees', { name: employee })
     } catch (error) {
       // TODO
-      alert('Erro ao cadastrar funcionário, tente novamente')
+      // alert('Erro ao cadastrar funcionário, tente novamente')
     } finally {
       setLoading(true)
       getIndex()

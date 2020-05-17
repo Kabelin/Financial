@@ -6,10 +6,8 @@ import api from '../../services/api'
 
 export default function Home() {
   const [data, setData] = useState([])
-  const [date, setDate] = useState()
+  const [date, setDate] = useState(moment().format())
   const [loading, setLoading] = useState(true)
-
-  // TODO: Add employee field on tables
 
   const getIndex = (value) => {
     api
@@ -23,12 +21,31 @@ export default function Home() {
       })
   }
 
+  const handleNewPosting = async (post) => {
+    const form = {
+      description: post.description,
+      type: post.type,
+      value: post.value,
+      employee: post.employee.name,
+      employeeId: post.employee.id,
+    }
+    try {
+      await api.post('postings', form)
+    } catch (error) {
+      // TODO
+      alert(error)
+    } finally {
+      getIndex()
+    }
+  }
+
   useEffect(() => getIndex(), [])
   return (
     <Container>
       <Header>Home</Header>
       <EnhancedTable
         loading={loading}
+        handleNewPosting={handleNewPosting}
         setLoading={setLoading}
         getData={getIndex}
         rows={data}

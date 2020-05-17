@@ -71,9 +71,12 @@ export default function EnhancedTable({
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [data, setData] = React.useState([])
-  const [count, setCount] = React.useState(rows.length)
+  const [count, setCount] = React.useState(0)
 
-  useEffect(() => setData(rows), [rows])
+  useEffect(() => {
+    setData(rows)
+    setCount(rows.length)
+  }, [rows])
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -92,7 +95,6 @@ export default function EnhancedTable({
 
   const handleClick = (event, row) => {
     const selectedIndex = selected.indexOf(row)
-    console.log(selected, selected.indexOf(row), row)
     let newSelected = []
 
     if (selectedIndex === -1) {
@@ -102,7 +104,6 @@ export default function EnhancedTable({
       )
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1))
-      console.log(newSelected)
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1))
     } else if (selectedIndex > 0) {
@@ -125,6 +126,17 @@ export default function EnhancedTable({
   }
 
   const isSelected = (row) => selected.indexOf(row) !== -1
+
+  const handleQntOfRows = () => {
+    let i = Math.ceil(data.length / 5) * 5
+    // eslint-disable-next-line prefer-const
+    let arr = []
+    while (i !== 0) {
+      arr.push(i)
+      i -= 5
+    }
+    return arr
+  }
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage)
@@ -256,6 +268,14 @@ export default function EnhancedTable({
                           id={labelId}
                           scope="row"
                         >
+                          {row.employee}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                        >
                           {row.type === 'credit' ? 'Crédito' : 'Débito'}
                         </TableCell>
                         <TableCell align="right">
@@ -273,7 +293,7 @@ export default function EnhancedTable({
               {data.length === 0 && (
                 <TableRow>
                   <TableCell
-                    style={{ textAlign: 'center', height: 53 * emptyRows }}
+                    style={{ textAlign: 'center', height: 53 * 5 }}
                     colSpan={6}
                   >
                     Não há dados para serem listados
@@ -294,7 +314,7 @@ export default function EnhancedTable({
         )}
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={data.length >= 25 ? [5, 10, 25] : [5, 10]}
+        rowsPerPageOptions={data.length < 5 ? [] : handleQntOfRows()}
         component="div"
         count={count}
         rowsPerPage={rowsPerPage}
