@@ -14,6 +14,14 @@ module.exports = {
   async create(req, res) {
     const { description, type, value, employee, employeeId } = req.body
 
+    // const id = await connection('employees')
+    //   .where('id', employeeId)
+    //   .select('id')
+    //   .first()
+
+    // if (!employeeId)
+    //   return res.status(400).json({ error: 'Employee not found!' })
+
     await connection('postings').insert({
       description,
       type,

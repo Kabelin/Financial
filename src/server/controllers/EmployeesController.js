@@ -6,6 +6,11 @@ module.exports = {
     return res.json(employees)
   },
 
+  async indexEmployees(req, res) {
+    const employees = await connection('employees').select('id', 'name')
+    return res.json(employees)
+  },
+
   async create(req, res) {
     const { name } = req.body
 
